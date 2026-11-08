@@ -1,7 +1,7 @@
 # Universal API Assurance (UAA)
 
 [![Python](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-zero%20(stdlib%20only)-success.svg)](engine/)
 [![OWASP API Top 10](https://img.shields.io/badge/security-OWASP%20API%20Top%2010-red.svg)](schemas/finding.schema.json)
 [![Coverage Ledger](https://img.shields.io/badge/coverage-7--stage%20ledger-purple.svg)](docs/coverage-model.md)
@@ -501,7 +501,7 @@ All UAA artifacts are validated against JSON Schemas conforming to **JSON Schema
 universal-api-assurance/
 ├── README.md                          # Production guide and documentation portal
 ├── SKILL.md                           # Master orchestration skill for AI coding agents
-├── LICENSE                            # Apache 2.0 Open Source License
+├── LICENSE                            # MIT License
 │
 ├── skills/                            # Agent Skills Layer (Reasoning & Orchestration)
 │   ├── api-audit-orchestrator/        # End-to-end lifecycle and review coordinator
@@ -570,7 +570,7 @@ universal-api-assurance/
 <a id="contributing--license"></a>
 ## Contributing & License
 
-Universal API Assurance is open source under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for complete details.
+Universal API Assurance is open source under the **MIT License**. See the [LICENSE](LICENSE) file for complete details.
 
 Contributions are welcome! Please ensure:
 1. All engine code uses only the **Python standard library** (no external runtime dependencies).
