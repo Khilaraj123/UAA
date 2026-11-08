@@ -1,0 +1,43 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# Caches and temporary files
+.cache/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+env/
+
+# Build and distribution
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Execution artifacts
+api-audit/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Local IDE configuration
+.vscode/*
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo

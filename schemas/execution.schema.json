@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://universal-api-assurance.dev/schemas/execution.schema.json",
+  "title": "UAA Execution Results Schema",
+  "description": "Deterministic test execution results with redacted sensitive data and exact assertion outcomes.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "target_origin",
+    "started_at",
+    "completed_at",
+    "summary",
+    "results"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "2.0.0"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "specification_id": {
+      "type": "string"
+    },
+    "target_origin": {
+      "type": "string"
+    },
+    "runner_version": {
+      "type": "string"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "summary": {
+      "type": "object",
+      "required": ["total", "passed", "failed", "skipped", "errors", "pass_rate"],
+      "properties": {
+        "total": { "type": "integer" },
+        "passed": { "type": "integer" },
+        "failed": { "type": "integer" },
+        "skipped": { "type": "integer" },
+        "errors": { "type": "integer" },
+        "pass_rate": { "type": "number", "minimum": 0, "maximum": 100 },
+        "total_duration_ms": { "type": "number" }
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "endpoint_id",
+          "outcome",
+          "passed"
+        ],
+        "properties": {
+          "scenario_id": { "type": "string" },
+          "endpoint_id": { "type": "string" },
+          "outcome": {
+            "type": "string",
+            "enum": ["passed", "failed", "skipped", "error"]
+          },
+          "passed": { "type": "boolean" },
+          "skip_reason": { "type": ["string", "null"] },
+          "error_message": { "type": ["string", "null"] },
+          "http_status": { "type": ["integer", "null"] },
+          "duration_ms": { "type": ["number", "null"] },
+          "request": {
+            "type": "object",
+            "properties": {
+              "method": { "type": "string" },
+              "path": { "type": "string" },
+              "headers": { "type": "object" }
+            }
+          },
+          "response": {
+            "type": "object",
+            "properties": {
+              "status": { "type": "integer" },
+              "headers": { "type": "object" },
+              "body": {},
+              "body_truncated": { "type": "boolean" }
+            }
+          },
+          "assertions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["type", "passed"],
+              "properties": {
+                "type": { "type": "string" },
+                "path": { "type": ["string", "null"] },
+                "expected": {},
+                "actual": {},
+                "passed": { "type": "boolean" },
+                "message": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

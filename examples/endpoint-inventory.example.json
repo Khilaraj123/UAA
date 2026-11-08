@@ -1,0 +1,156 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-08T12:00:00Z",
+  "completeness": "high",
+  "discovery_sources": [
+    "OpenAPI 3.1 contract at /openapi.json",
+    "Source code router definitions in src/api/routes.py",
+    "Ingress routing configuration in deploy/ingress.yaml"
+  ],
+  "gaps": [],
+  "endpoints": [
+    {
+      "endpoint_id": "GET /health",
+      "api_type": "REST",
+      "method": "GET",
+      "path_template": "/health",
+      "full_path_if_known": "/health",
+      "operation_id": "get_health",
+      "name": "Health Check",
+      "summary": "Check API service operational and dependency health",
+      "discovery_status": "confirmed",
+      "confidence": "high",
+      "source_evidence": [
+        {
+          "file": "src/api/routes.py",
+          "line_range": "24-35",
+          "discovery_method": "router_registration",
+          "confidence": "high"
+        },
+        {
+          "file": "openapi.json",
+          "line_range": "12-40",
+          "discovery_method": "contract_specification",
+          "confidence": "high"
+        }
+      ],
+      "request": {
+        "headers": {},
+        "query": {},
+        "body": null
+      },
+      "response": {
+        "status_codes": [200, 503],
+        "content_types": ["application/json"],
+        "schema": {
+          "type": "object",
+          "properties": {
+            "status": {"type": "string"},
+            "timestamp": {"type": "string"}
+          }
+        }
+      },
+      "auth": {
+        "required": false,
+        "mechanism": "none"
+      },
+      "side_effect_risk": "none",
+      "gaps": []
+    },
+    {
+      "endpoint_id": "GET /api/items",
+      "api_type": "REST",
+      "method": "GET",
+      "path_template": "/api/items",
+      "full_path_if_known": "/api/items",
+      "operation_id": "list_items",
+      "name": "List Items",
+      "summary": "Retrieve paginated collection of items",
+      "discovery_status": "confirmed",
+      "confidence": "high",
+      "source_evidence": [
+        {
+          "file": "src/api/routes.py",
+          "line_range": "50-75",
+          "discovery_method": "router_registration",
+          "confidence": "high"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer token (required)"
+        },
+        "query": {
+          "page": "integer (optional, default 1)",
+          "limit": "integer (optional, default 20)"
+        },
+        "body": null
+      },
+      "response": {
+        "status_codes": [200, 401],
+        "content_types": ["application/json"],
+        "schema": {
+          "type": "object",
+          "properties": {
+            "items": {"type": "array"},
+            "total": {"type": "integer"}
+          }
+        }
+      },
+      "auth": {
+        "required": true,
+        "mechanism": "bearer_jwt",
+        "roles": ["user", "admin"]
+      },
+      "side_effect_risk": "read",
+      "gaps": []
+    },
+    {
+      "endpoint_id": "POST /api/items",
+      "api_type": "REST",
+      "method": "POST",
+      "path_template": "/api/items",
+      "full_path_if_known": "/api/items",
+      "operation_id": "create_item",
+      "name": "Create Item",
+      "summary": "Create a new item in the collection",
+      "discovery_status": "confirmed",
+      "confidence": "high",
+      "source_evidence": [
+        {
+          "file": "src/api/routes.py",
+          "line_range": "80-110",
+          "discovery_method": "router_registration",
+          "confidence": "high"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer token (required)",
+          "Content-Type": "application/json"
+        },
+        "query": {},
+        "body": {
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "name": {"type": "string"},
+            "description": {"type": "string"}
+          }
+        }
+      },
+      "response": {
+        "status_codes": [201, 400, 401],
+        "content_types": ["application/json"]
+      },
+      "auth": {
+        "required": true,
+        "mechanism": "bearer_jwt",
+        "roles": ["user", "admin"]
+      },
+      "side_effect_risk": "reversible_write",
+      "gaps": []
+    }
+  ]
+}
+

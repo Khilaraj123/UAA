@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://universal-api-assurance.dev/schemas/testspec.schema.json",
+  "title": "UAA Test Specification Schema",
+  "description": "Deterministic, executable test specifications tied to discovered endpoints with rigorous assertions and safety controls.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "specification_id",
+    "scenarios"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "2.0.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "specification_id": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "target_base_url_placeholder": { "type": "string" },
+        "total_endpoints_covered": { "type": "integer" },
+        "total_scenarios": { "type": "integer" }
+      }
+    },
+    "auth_profiles": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": { "type": "string", "enum": ["bearer", "api_key", "basic", "custom_header", "cookie", "none"] },
+          "token_env": { "type": "string" },
+          "header_name": { "type": "string" },
+          "role": { "type": "string" },
+          "tenant_id": { "type": "string" }
+        }
+      }
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "endpoint_id",
+          "title",
+          "category",
+          "priority",
+          "request",
+          "assertions",
+          "safety",
+          "enabled"
+        ],
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "description": "Lexically sortable stable ID, e.g., SCEN-001-GET-USERS-HAPPY"
+          },
+          "endpoint_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "happy_path",
+              "input_validation",
+              "auth_missing",
+              "auth_invalid",
+              "authz_forbidden",
+              "tenant_isolation",
+              "not_found",
+              "conflict",
+              "boundary_edge",
+              "security_audit",
+              "rate_limit",
+              "regression"
+            ]
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["P0", "P1", "P2", "P3"]
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "request": {
+            "type": "object",
+            "required": ["method", "path"],
+            "properties": {
+              "method": { "type": "string" },
+              "path": { "type": "string" },
+              "query": { "type": "object" },
+              "headers": { "type": "object" },
+              "body": {},
+              "timeout_seconds": { "type": "number", "maximum": 60 }
+            }
+          },
+          "auth_profile": {
+            "type": ["string", "null"]
+          },
+          "assertions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "status",
+                    "header_equals",
+                    "header_exists",
+                    "json_equals",
+                    "json_exists",
+                    "json_type",
+                    "text_contains",
+                    "text_not_contains",
+                    "content_type"
+                  ]
+                },
+                "name": { "type": "string" },
+                "path": { "type": "string" },
+                "expected": {},
+                "description": { "type": "string" }
+              }
+            }
+          },
+          "safety": {
+            "type": "object",
+            "required": ["is_safe_read", "has_external_effects", "is_destructive"],
+            "properties": {
+              "is_safe_read": { "type": "boolean" },
+              "has_external_effects": { "type": "boolean" },
+              "is_destructive": { "type": "boolean" },
+              "requires_approval": { "type": "boolean" }
+            }
+          },
+          "preconditions": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "cleanup": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "skip_reason": {
+            "type": ["string", "null"]
+          }
+        }
+      }
+    }
+  }
+}
+

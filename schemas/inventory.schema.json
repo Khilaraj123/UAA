@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://universal-api-assurance.dev/schemas/inventory.schema.json",
+  "title": "UAA API Inventory Schema",
+  "description": "Full inventory artifact of discovered endpoints with multi-source reconciliation and completeness rating.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "completeness",
+    "discovery_sources",
+    "endpoints"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "2.0.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "target_repository": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "root_path": { "type": "string" },
+        "git_commit": { "type": ["string", "null"] },
+        "primary_languages": { "type": "array", "items": { "type": "string" } },
+        "detected_frameworks": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "completeness": {
+      "type": "string",
+      "enum": ["high", "medium", "low"]
+    },
+    "completeness_score": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Quantitative ratio of verified endpoints against discovered candidate surfaces."
+    },
+    "discovery_sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_layer", "source_name", "inspected", "endpoints_found"],
+        "properties": {
+          "source_layer": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6,
+            "description": "Layer 1=Contract, 2=Route registration, 3=Source AST, 4=Plugin, 5=Runtime, 6=Gateway"
+          },
+          "source_name": { "type": "string" },
+          "location": { "type": "string" },
+          "inspected": { "type": "boolean" },
+          "endpoints_found": { "type": "integer" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "reconciliation_summary": {
+      "type": "object",
+      "properties": {
+        "contract_and_code": { "type": "integer" },
+        "code_only": { "type": "integer" },
+        "contract_only": { "type": "integer" },
+        "gateway_only": { "type": "integer" },
+        "shadowed_routes": { "type": "array", "items": { "type": "string" } },
+        "conflicts": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "items": {
+        "$ref": "endpoint.schema.json"
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
+

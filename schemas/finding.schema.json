@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://universal-api-assurance.dev/schemas/finding.schema.json",
+  "title": "UAA Security & Correctness Finding Schema",
+  "description": "Standardized schema for security vulnerabilities, business logic flaws, and contract regressions identified during audit.",
+  "type": "object",
+  "required": [
+    "finding_id",
+    "title",
+    "severity",
+    "category",
+    "endpoint_id",
+    "status",
+    "description",
+    "evidence",
+    "remediation"
+  ],
+  "properties": {
+    "finding_id": {
+      "type": "string",
+      "description": "Unique identifier, e.g., FIND-2026-001-BOLA"
+    },
+    "title": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low", "info"]
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "bola_idor",
+        "broken_authentication",
+        "broken_authorization",
+        "mass_assignment",
+        "injection",
+        "rate_limiting",
+        "data_exposure",
+        "contract_mismatch",
+        "unhandled_exception",
+        "security_misconfiguration"
+      ]
+    },
+    "cwe_id": {
+      "type": ["string", "null"]
+    },
+    "owasp_api_category": {
+      "type": ["string", "null"]
+    },
+    "endpoint_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["open", "confirmed", "false_positive", "mitigated", "remediated"]
+    },
+    "description": {
+      "type": "string"
+    },
+    "impact": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["claim_type"],
+      "properties": {
+        "claim_type": {
+          "type": "string",
+          "enum": ["observed_execution", "code_analysis", "contract_inspection", "inferred_model"]
+        },
+        "reproducing_scenario_id": { "type": ["string", "null"] },
+        "code_anchor": {
+          "type": "object",
+          "properties": {
+            "file_path": { "type": "string" },
+            "line_start": { "type": "integer" },
+            "line_end": { "type": "integer" },
+            "snippet": { "type": "string" }
+          }
+        },
+        "observed_request": { "type": "object" },
+        "observed_response": { "type": "object" },
+        "explanation": { "type": "string" }
+      }
+    },
+    "independent_review": {
+      "type": "object",
+      "properties": {
+        "reviewed": { "type": "boolean" },
+        "reviewer_role": { "type": "string" },
+        "verdict": { "type": "string", "enum": ["agreed", "disputed", "needs_more_evidence"] },
+        "notes": { "type": "string" }
+      }
+    },
+    "remediation": {
+      "type": "object",
+      "required": ["guidance"],
+      "properties": {
+        "guidance": { "type": "string" },
+        "suggested_diff": { "type": ["string", "null"] },
+        "reference_urls": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}
+

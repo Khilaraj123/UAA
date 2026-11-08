@@ -1,0 +1,96 @@
+{
+  "schema_version": "2.0.0",
+  "run_id": "run-tenant-audit",
+  "updated_at": "2026-11-08T12:30:00Z",
+  "sources_inspected": [
+    {
+      "source_name": "Express Router AST",
+      "layer": 2,
+      "status": "complete",
+      "files_scanned": 4,
+      "endpoints_yielded": 2,
+      "limitation_notes": "None"
+    }
+  ],
+  "metrics": {
+    "total_endpoints_discovered": 2,
+    "endpoints_understood": 2,
+    "endpoints_with_scenarios": 2,
+    "endpoints_executed": 2,
+    "endpoints_verified_pass": 1,
+    "endpoints_unverified": 1,
+    "coverage_ratio": 0.5
+  },
+  "endpoint_ledger": [
+    {
+      "endpoint_id": "rest:GET:/api/v1/tenants/{tenantId}/invoices/{invoiceId}",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/invoices/{invoiceId}",
+      "stage_discovery": {
+        "status": "confirmed",
+        "sources": [
+          "Express Router AST"
+        ]
+      },
+      "stage_understanding": {
+        "status": "complete",
+        "auth_mapped": true,
+        "params_mapped": true,
+        "side_effects_classified": true
+      },
+      "stage_scenarios_designed": {
+        "scenario_count": 2,
+        "categories": [
+          "happy_path",
+          "tenant_isolation"
+        ]
+      },
+      "stage_executed": {
+        "executed_count": 2,
+        "passed_count": 1,
+        "failed_count": 1,
+        "skipped_count": 0
+      },
+      "stage_verified": false,
+      "untested_reason": "failures_present"
+    },
+    {
+      "endpoint_id": "rest:GET:/api/v1/profile",
+      "method": "GET",
+      "path": "/api/v1/profile",
+      "stage_discovery": {
+        "status": "confirmed",
+        "sources": [
+          "Express Router AST"
+        ]
+      },
+      "stage_understanding": {
+        "status": "complete",
+        "auth_mapped": true,
+        "params_mapped": true,
+        "side_effects_classified": true
+      },
+      "stage_scenarios_designed": {
+        "scenario_count": 1,
+        "categories": [
+          "happy_path"
+        ]
+      },
+      "stage_executed": {
+        "executed_count": 1,
+        "passed_count": 1,
+        "failed_count": 0,
+        "skipped_count": 0
+      },
+      "stage_verified": true,
+      "untested_reason": null
+    }
+  ],
+  "unverified_endpoints": [
+    {
+      "endpoint_id": "rest:GET:/api/v1/tenants/{tenantId}/invoices/{invoiceId}",
+      "reason": "BOLA failure: cross-tenant access returned 200 instead of 403 Forbidden",
+      "remediation_to_test": "Enforce organization boundary checks in invoice service"
+    }
+  ]
+}

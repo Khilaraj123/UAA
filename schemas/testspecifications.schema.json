@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "API Test Specifications",
+  "type": "object",
+  "required": ["schema_version", "scenarios"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "redact_json_keys": {"type": "array", "items": {"type": "string"}},
+    "scenarios": {"type": "array", "items": {"type": "object", "required": ["scenario_id", "endpoint_id", "title", "request", "assertions", "safety"], "properties": {
+      "scenario_id": {"type": "string"}, "endpoint_id": {"type": "string"}, "title": {"type": "string"}, "category": {"type": "string"}, "priority": {"type": "string"}, "rationale": {"type": "string"}, "enabled": {"type": "boolean"}, "needs_review": {"type": "boolean"}, "skip_reason": {"type": "string"},
+      "safety": {"enum": ["read_only", "reversible_write", "destructive", "external_effect"]},
+      "request": {"type": "object", "required": ["method", "path"], "properties": {"method": {"type": "string"}, "path": {"type": "string"}, "headers": {"type": "object"}, "query": {"type": "object"}, "body": {}, "timeout_seconds": {"type": "number"}}},
+      "assertions": {"type": "array", "items": {"type": "object", "required": ["type"], "properties": {"type": {"enum": ["status", "header_equals", "header_exists", "json_equals", "json_exists", "json_type", "text_contains", "text_not_contains", "content_type"]}, "expected": {}, "name": {"type": "string"}, "path": {"type": "string"}}}}
+    }}}
+  }
+}

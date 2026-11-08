@@ -1,0 +1,71 @@
+{
+  "schema_version": "2.0.0",
+  "generated_at": "2026-11-08T12:05:00Z",
+  "specification_id": "SPEC-BASIC-REST-001",
+  "scenarios": [
+    {
+      "scenario_id": "SCEN-001-GET-HEALTH",
+      "endpoint_id": "rest:GET:/health",
+      "title": "Health check returns 200 OK",
+      "category": "happy_path",
+      "priority": "P0",
+      "request": {
+        "method": "GET",
+        "path": "/health"
+      },
+      "assertions": [
+        { "type": "status", "expected": 200 },
+        { "type": "json_equals", "path": "status", "expected": "ok" }
+      ],
+      "safety": {
+        "is_safe_read": true,
+        "has_external_effects": false,
+        "is_destructive": false
+      },
+      "enabled": true
+    },
+    {
+      "scenario_id": "SCEN-002-GET-ITEMS",
+      "endpoint_id": "rest:GET:/api/v1/items",
+      "title": "Get items returns 200 list",
+      "category": "happy_path",
+      "priority": "P0",
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/items"
+      },
+      "assertions": [
+        { "type": "status", "expected": 200 },
+        { "type": "content_type", "expected": "application/json" }
+      ],
+      "safety": {
+        "is_safe_read": true,
+        "has_external_effects": false,
+        "is_destructive": false
+      },
+      "enabled": true
+    },
+    {
+      "scenario_id": "SCEN-003-POST-ITEMS-UNAUTH",
+      "endpoint_id": "rest:POST:/api/v1/items",
+      "title": "Create item without auth returns 401",
+      "category": "auth_missing",
+      "priority": "P0",
+      "request": {
+        "method": "POST",
+        "path": "/api/v1/items",
+        "body": { "name": "Unauthorized Gadget", "price": 19.99 }
+      },
+      "assertions": [
+        { "type": "status", "expected": 401 }
+      ],
+      "safety": {
+        "is_safe_read": false,
+        "has_external_effects": false,
+        "is_destructive": false
+      },
+      "enabled": true
+    }
+  ]
+}
+

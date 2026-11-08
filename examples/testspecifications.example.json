@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "redact_json_keys": ["email", "phone", "customerId"],
+  "scenarios": [
+    {
+      "scenario_id": "health-001",
+      "endpoint_id": "GET /health",
+      "title": "Health endpoint returns OK",
+      "category": "smoke",
+      "priority": "P1",
+      "enabled": true,
+      "safety": "read_only",
+      "request": {"method": "GET", "path": "/health", "timeout_seconds": 5},
+      "assertions": [
+        {"type": "status", "expected": 200},
+        {"type": "json_equals", "path": "status", "expected": "ok"}
+      ]
+    },
+    {
+      "scenario_id": "protected-list-unauth-001",
+      "endpoint_id": "GET /api/items",
+      "title": "Protected list endpoint rejects anonymous request",
+      "category": "authentication",
+      "priority": "P1",
+      "enabled": false,
+      "needs_review": true,
+      "skip_reason": "Confirm authentication requirement from implementation",
+      "safety": "read_only",
+      "request": {"method": "GET", "path": "/api/items"},
+      "assertions": [{"type": "status", "expected": 401}]
+    }
+  ]
+}

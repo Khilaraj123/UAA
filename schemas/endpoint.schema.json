@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://universal-api-assurance.dev/schemas/endpoint.schema.json",
+  "title": "UAA Canonical API Endpoint",
+  "description": "Canonical, protocol-neutral, and framework-independent representation of a single exposed API endpoint.",
+  "type": "object",
+  "required": [
+    "endpoint_id",
+    "api_type",
+    "method",
+    "path_template",
+    "discovery_status",
+    "confidence",
+    "source_evidence"
+  ],
+  "properties": {
+    "endpoint_id": {
+      "type": "string",
+      "description": "Stable unique identifier formatted as [api_type]:[METHOD]:[normalized_path]."
+    },
+    "api_type": {
+      "type": "string",
+      "enum": ["rest", "graphql", "grpc", "websocket", "sse", "rpc", "webhook"],
+      "description": "API communication style or paradigm."
+    },
+    "method": {
+      "type": "string",
+      "description": "HTTP method (GET, POST, PUT, DELETE, PATCH, etc.) or RPC equivalent."
+    },
+    "path_template": {
+      "type": "string",
+      "description": "Normalized parameterized route path (e.g., /api/v1/users/{id})."
+    },
+    "full_path_if_known": {
+      "type": ["string", "null"],
+      "description": "Effective route path including global gateway prefixes or base path rewrites."
+    },
+    "operation_id": {
+      "type": ["string", "null"],
+      "description": "Specification operation ID or handler method name."
+    },
+    "name": {
+      "type": ["string", "null"],
+      "description": "Human-friendly endpoint or action name."
+    },
+    "summary": {
+      "type": ["string", "null"],
+      "description": "Concise summary of endpoint responsibility."
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "In-depth functional explanation."
+    },
+    "discovery_status": {
+      "type": "string",
+      "enum": ["confirmed", "inferred", "contract_only", "runtime_only"],
+      "description": "Grounding category for the discovery claim."
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"],
+      "description": "Confidence level based on direct evidence."
+    },
+    "source_evidence": {
+      "type": "array",
+      "description": "Traceable code or contract anchors establishing the endpoint's existence.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["source_type", "file_path", "confidence"],
+        "properties": {
+          "source_type": {
+            "type": "string",
+            "enum": ["contract", "framework_route", "source_code", "plugin_module", "runtime_metadata", "gateway_config"]
+          },
+          "file_path": {
+            "type": "string"
+          },
+          "line_start": {
+            "type": ["integer", "null"]
+          },
+          "line_end": {
+            "type": ["integer", "null"]
+          },
+          "symbol": {
+            "type": ["string", "null"]
+          },
+          "snippet": {
+            "type": ["string", "null"]
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["high", "medium", "low"]
+          }
+        }
+      }
+    },
+    "parameters": {
+      "type": "array",
+      "description": "Input parameters accepted by this endpoint.",
+      "items": {
+        "type": "object",
+        "required": ["name", "in", "required"],
+        "properties": {
+          "name": { "type": "string" },
+          "in": { "type": "string", "enum": ["path", "query", "header", "cookie", "body"] },
+          "required": { "type": "boolean" },
+          "type": { "type": "string" },
+          "description": { "type": "string" },
+          "default": {},
+          "enum": { "type": "array" }
+        }
+      }
+    },
+    "request_body": {
+      "type": ["object", "null"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "content_types": { "type": "array", "items": { "type": "string" } },
+        "schema": { "type": "object" },
+        "example": {}
+      }
+    },
+    "responses": {
+      "type": "array",
+      "description": "Documented or observed response contracts.",
+      "items": {
+        "type": "object",
+        "required": ["status_code"],
+        "properties": {
+          "status_code": { "type": "integer" },
+          "content_type": { "type": "string" },
+          "description": { "type": "string" },
+          "schema": { "type": "object" },
+          "evidence": { "type": "string" }
+        }
+      }
+    },
+    "authentication": {
+      "type": "object",
+      "required": ["required"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "schemes": { "type": "array", "items": { "type": "string" } },
+        "roles": { "type": "array", "items": { "type": "string" } },
+        "scopes": { "type": "array", "items": { "type": "string" } },
+        "tenant_isolated": { "type": "boolean" }
+      }
+    },
+    "side_effect_risk": {
+      "type": "string",
+      "enum": ["none", "read", "reversible_write", "destructive", "external_effect", "unknown"],
+      "description": "Safety classification for automated execution."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "gaps": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
+

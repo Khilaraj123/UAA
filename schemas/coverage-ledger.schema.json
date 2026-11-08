@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://universal-api-assurance.dev/schemas/coverage-ledger.schema.json",
+  "title": "UAA Measurable Coverage Ledger Schema",
+  "description": "Rigorous ledger tracking seven-stage lifecycle verification across every discovered API surface.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "updated_at",
+    "sources_inspected",
+    "metrics",
+    "endpoint_ledger",
+    "unverified_endpoints"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "2.0.0"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sources_inspected": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_name", "layer", "status", "files_scanned"],
+        "properties": {
+          "source_name": { "type": "string" },
+          "layer": { "type": "integer" },
+          "status": { "type": "string", "enum": ["complete", "partial", "skipped", "failed"] },
+          "files_scanned": { "type": "integer" },
+          "endpoints_yielded": { "type": "integer" },
+          "limitation_notes": { "type": "string" }
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "required": [
+        "total_endpoints_discovered",
+        "endpoints_understood",
+        "endpoints_with_scenarios",
+        "endpoints_executed",
+        "endpoints_verified_pass",
+        "endpoints_unverified",
+        "coverage_ratio"
+      ],
+      "properties": {
+        "total_endpoints_discovered": { "type": "integer" },
+        "endpoints_understood": { "type": "integer" },
+        "endpoints_with_scenarios": { "type": "integer" },
+        "endpoints_executed": { "type": "integer" },
+        "endpoints_verified_pass": { "type": "integer" },
+        "endpoints_unverified": { "type": "integer" },
+        "coverage_ratio": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+      }
+    },
+    "endpoint_ledger": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "endpoint_id",
+          "method",
+          "path",
+          "stage_discovery",
+          "stage_understanding",
+          "stage_scenarios_designed",
+          "stage_executed",
+          "stage_verified"
+        ],
+        "properties": {
+          "endpoint_id": { "type": "string" },
+          "method": { "type": "string" },
+          "path": { "type": "string" },
+          "stage_discovery": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": { "type": "string", "enum": ["confirmed", "inferred", "contract_only"] },
+              "sources": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "stage_understanding": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": { "type": "string", "enum": ["complete", "partial", "not_analyzed"] },
+              "auth_mapped": { "type": "boolean" },
+              "params_mapped": { "type": "boolean" },
+              "side_effects_classified": { "type": "boolean" }
+            }
+          },
+          "stage_scenarios_designed": {
+            "type": "object",
+            "required": ["scenario_count"],
+            "properties": {
+              "scenario_count": { "type": "integer" },
+              "categories": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "stage_executed": {
+            "type": "object",
+            "required": ["executed_count", "passed_count", "failed_count"],
+            "properties": {
+              "executed_count": { "type": "integer" },
+              "passed_count": { "type": "integer" },
+              "failed_count": { "type": "integer" },
+              "skipped_count": { "type": "integer" }
+            }
+          },
+          "stage_verified": {
+            "type": "boolean",
+            "description": "True only if at least one core scenario passed and no blocking gap exists."
+          },
+          "untested_reason": {
+            "type": ["string", "null"],
+            "enum": [
+              null,
+              "destructive_action_disallowed",
+              "external_effect_disallowed",
+              "missing_credentials",
+              "unresolved_parameter_values",
+              "dynamic_mock_required",
+              "rate_limit_risk",
+              "out_of_scope_for_run"
+            ]
+          }
+        }
+      }
+    },
+    "unverified_endpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["endpoint_id", "reason", "remediation_to_test"],
+        "properties": {
+          "endpoint_id": { "type": "string" },
+          "reason": { "type": "string" },
+          "remediation_to_test": { "type": "string" }
+        }
+      }
+    }
+  }
+}
+

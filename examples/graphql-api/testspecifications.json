@@ -1,0 +1,37 @@
+{
+  "schema_version": "2.0.0",
+  "generated_at": "2026-11-08T12:40:00Z",
+  "specification_id": "SPEC-GRAPHQL-001",
+  "scenarios": [
+    {
+      "scenario_id": "SCEN-GQL-001-QUERY-ME",
+      "endpoint_id": "graphql:POST:/graphql",
+      "title": "Query me returns current user",
+      "category": "happy_path",
+      "priority": "P0",
+      "request": {
+        "method": "POST",
+        "path": "/graphql",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer ${UAA_TEST_TOKEN}"
+        },
+        "body": {
+          "query": "query { me { id username email role } }"
+        }
+      },
+      "assertions": [
+        { "type": "status", "expected": 200 },
+        { "type": "json_exists", "path": "data.me.id" },
+        { "type": "json_type", "path": "data.me.username", "expected": "string" }
+      ],
+      "safety": {
+        "is_safe_read": true,
+        "has_external_effects": false,
+        "is_destructive": false
+      },
+      "enabled": true
+    }
+  ]
+}
+

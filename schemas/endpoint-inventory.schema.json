@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "API Endpoint Inventory",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "completeness",
+    "endpoints"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "completeness": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "discovery_sources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "endpoint_id",
+          "api_type",
+          "method",
+          "path_template",
+          "discovery_status",
+          "confidence",
+          "source_evidence"
+        ],
+        "properties": {
+          "endpoint_id": {
+            "type": "string"
+          },
+          "api_type": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          },
+          "path_template": {
+            "type": "string"
+          },
+          "full_path_if_known": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "operation_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "summary": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "discovery_status": {
+            "enum": [
+              "confirmed",
+              "inferred",
+              "contract_only",
+              "runtime_only"
+            ]
+          },
+          "confidence": {
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "source_evidence": {
+            "type": "array"
+          },
+          "request": {
+            "type": "object"
+          },
+          "response": {
+            "type": "object"
+          },
+          "auth": {
+            "type": "object"
+          },
+          "side_effect_risk": {
+            "enum": [
+              "none",
+              "read",
+              "reversible_write",
+              "destructive",
+              "external_effect",
+              "unknown"
+            ]
+          },
+          "gaps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

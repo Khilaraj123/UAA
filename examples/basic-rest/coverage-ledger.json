@@ -1,0 +1,61 @@
+{
+  "schema_version": "2.0.0",
+  "run_id": "run-001",
+  "updated_at": "2026-11-08T12:10:00Z",
+  "sources_inspected": [
+    {
+      "source_name": "FastAPI Route AST",
+      "layer": 2,
+      "status": "complete",
+      "files_scanned": 1,
+      "endpoints_yielded": 3,
+      "limitation_notes": "None"
+    }
+  ],
+  "metrics": {
+    "total_endpoints_discovered": 3,
+    "endpoints_understood": 3,
+    "endpoints_with_scenarios": 3,
+    "endpoints_executed": 3,
+    "endpoints_verified_pass": 3,
+    "endpoints_unverified": 0,
+    "coverage_ratio": 1.0
+  },
+  "endpoint_ledger": [
+    {
+      "endpoint_id": "rest:GET:/health",
+      "method": "GET",
+      "path": "/health",
+      "stage_discovery": { "status": "confirmed", "sources": ["FastAPI Route AST"] },
+      "stage_understanding": { "status": "complete", "auth_mapped": true, "params_mapped": true, "side_effects_classified": true },
+      "stage_scenarios_designed": { "scenario_count": 1, "categories": ["happy_path"] },
+      "stage_executed": { "executed_count": 1, "passed_count": 1, "failed_count": 0, "skipped_count": 0 },
+      "stage_verified": true,
+      "untested_reason": null
+    },
+    {
+      "endpoint_id": "rest:GET:/api/v1/items",
+      "method": "GET",
+      "path": "/api/v1/items",
+      "stage_discovery": { "status": "confirmed", "sources": ["FastAPI Route AST"] },
+      "stage_understanding": { "status": "complete", "auth_mapped": true, "params_mapped": true, "side_effects_classified": true },
+      "stage_scenarios_designed": { "scenario_count": 1, "categories": ["happy_path"] },
+      "stage_executed": { "executed_count": 1, "passed_count": 1, "failed_count": 0, "skipped_count": 0 },
+      "stage_verified": true,
+      "untested_reason": null
+    },
+    {
+      "endpoint_id": "rest:POST:/api/v1/items",
+      "method": "POST",
+      "path": "/api/v1/items",
+      "stage_discovery": { "status": "confirmed", "sources": ["FastAPI Route AST"] },
+      "stage_understanding": { "status": "complete", "auth_mapped": true, "params_mapped": true, "side_effects_classified": true },
+      "stage_scenarios_designed": { "scenario_count": 1, "categories": ["auth_missing"] },
+      "stage_executed": { "executed_count": 1, "passed_count": 1, "failed_count": 0, "skipped_count": 0 },
+      "stage_verified": true,
+      "untested_reason": null
+    }
+  ],
+  "unverified_endpoints": []
+}
+

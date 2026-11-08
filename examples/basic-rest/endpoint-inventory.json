@@ -1,0 +1,97 @@
+{
+  "schema_version": "2.0.0",
+  "generated_at": "2026-11-08T12:00:00Z",
+  "completeness": "high",
+  "completeness_score": 1.0,
+  "discovery_sources": [
+    {
+      "source_layer": 2,
+      "source_name": "FastAPI Route AST",
+      "location": "app/main.py",
+      "inspected": true,
+      "endpoints_found": 3,
+      "notes": "Scanned route decorators"
+    }
+  ],
+  "endpoints": [
+    {
+      "endpoint_id": "rest:GET:/health",
+      "api_type": "rest",
+      "method": "GET",
+      "path_template": "/health",
+      "discovery_status": "confirmed",
+      "confidence": "high",
+      "source_evidence": [
+        {
+          "source_type": "framework_route",
+          "file_path": "app/main.py",
+          "line_start": 10,
+          "line_end": 12,
+          "symbol": "health_check",
+          "confidence": "high"
+        }
+      ],
+      "parameters": [],
+      "authentication": { "required": false },
+      "side_effect_risk": "none"
+    },
+    {
+      "endpoint_id": "rest:GET:/api/v1/items",
+      "api_type": "rest",
+      "method": "GET",
+      "path_template": "/api/v1/items",
+      "discovery_status": "confirmed",
+      "confidence": "high",
+      "source_evidence": [
+        {
+          "source_type": "framework_route",
+          "file_path": "app/main.py",
+          "line_start": 15,
+          "line_end": 20,
+          "symbol": "list_items",
+          "confidence": "high"
+        }
+      ],
+      "parameters": [
+        { "name": "skip", "in": "query", "required": false },
+        { "name": "limit", "in": "query", "required": false }
+      ],
+      "authentication": { "required": false },
+      "side_effect_risk": "read"
+    },
+    {
+      "endpoint_id": "rest:POST:/api/v1/items",
+      "api_type": "rest",
+      "method": "POST",
+      "path_template": "/api/v1/items",
+      "discovery_status": "confirmed",
+      "confidence": "high",
+      "source_evidence": [
+        {
+          "source_type": "framework_route",
+          "file_path": "app/main.py",
+          "line_start": 25,
+          "line_end": 30,
+          "symbol": "create_item",
+          "confidence": "high"
+        }
+      ],
+      "parameters": [],
+      "request_body": {
+        "required": true,
+        "content_types": ["application/json"],
+        "schema": {
+          "type": "object",
+          "required": ["name", "price"],
+          "properties": {
+            "name": { "type": "string" },
+            "price": { "type": "number" }
+          }
+        }
+      },
+      "authentication": { "required": true, "schemes": ["Bearer"] },
+      "side_effect_risk": "reversible_write"
+    }
+  ]
+}
+
