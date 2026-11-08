@@ -66,6 +66,12 @@ class RunHistoryManager:
                 "message": "One or both runs lack execution-results.json",
                 "regressions": [],
                 "fixes": [],
+                "missing_scenarios": [],
+                "new_scenarios": [],
+                "regression_count": 0,
+                "fix_count": 0,
+                "missing_scenario_count": 0,
+                "new_scenario_count": 0,
             }
 
         prev_results = {r["scenario_id"]: r for r in prev_exec.get("results", [])}
@@ -75,29 +81,70 @@ class RunHistoryManager:
         fixes = []
         unchanged_passing = 0
         unchanged_failing = 0
+        new_scenarios = []
+        missing_scenarios = []
 
+        # Check all scenarios in current run
         for scen_id, curr_res in curr_results.items():
+            curr_passed = curr_res.get("passed", False)
             if scen_id in prev_results:
                 prev_res = prev_results[scen_id]
                 prev_passed = prev_res.get("passed", False)
-                curr_passed = curr_res.get("passed", False)
 
                 if prev_passed and not curr_passed:
                     regressions.append({
                         "scenario_id": scen_id,
                         "endpoint_id": curr_res.get("endpoint_id"),
+                        "type": "status_regression",
                         "message": f"Scenario {scen_id} previously PASSED in {previous_run_id} but now FAILED in {current_run_id}",
                     })
                 elif not prev_passed and curr_passed:
                     fixes.append({
                         "scenario_id": scen_id,
                         "endpoint_id": curr_res.get("endpoint_id"),
+                        "type": "status_fix",
                         "message": f"Scenario {scen_id} previously FAILED in {previous_run_id} but now PASSED in {current_run_id}",
                     })
                 elif curr_passed:
                     unchanged_passing += 1
                 else:
                     unchanged_failing += 1
+            else:
+                # Scenario is new in current run
+                new_entry = {
+                    "scenario_id": scen_id,
+                    "endpoint_id": curr_res.get("endpoint_id"),
+                    "type": "new_scenario",
+                    "passed": curr_passed,
+                    "message": f"New scenario {scen_id} introduced in {current_run_id} ({'PASSED' if curr_passed else 'FAILED'})",
+                }
+                new_scenarios.append(new_entry)
+                if not curr_passed:
+                    regressions.append({
+                        "scenario_id": scen_id,
+                        "endpoint_id": curr_res.get("endpoint_id"),
+                        "type": "new_failure",
+                        "message": f"New scenario {scen_id} introduced in {current_run_id} FAILED",
+                    })
+
+        # Check scenarios that existed previously but are missing in current run
+        for scen_id, prev_res in prev_results.items():
+            if scen_id not in curr_results:
+                prev_passed = prev_res.get("passed", False)
+                msg = (
+                    f"Scenario {scen_id} previously PASSED in {previous_run_id} but is MISSING in {current_run_id} (coverage loss)"
+                    if prev_passed
+                    else f"Scenario {scen_id} existed in {previous_run_id} (FAILED) but is MISSING in {current_run_id} (coverage loss)"
+                )
+                missing_entry = {
+                    "scenario_id": scen_id,
+                    "endpoint_id": prev_res.get("endpoint_id"),
+                    "type": "coverage_loss",
+                    "previously_passed": prev_passed,
+                    "message": msg,
+                }
+                missing_scenarios.append(missing_entry)
+                regressions.append(missing_entry)
 
         prev_sum = prev_exec.get("summary", {})
         curr_sum = curr_exec.get("summary", {})
@@ -111,8 +158,12 @@ class RunHistoryManager:
             "pass_rate_delta": round(curr_sum.get("pass_rate", 0.0) - prev_sum.get("pass_rate", 0.0), 2),
             "regressions": regressions,
             "fixes": fixes,
+            "missing_scenarios": missing_scenarios,
+            "new_scenarios": new_scenarios,
             "regression_count": len(regressions),
             "fix_count": len(fixes),
+            "missing_scenario_count": len(missing_scenarios),
+            "new_scenario_count": len(new_scenarios),
             "unchanged_passing": unchanged_passing,
             "unchanged_failing": unchanged_failing,
         }

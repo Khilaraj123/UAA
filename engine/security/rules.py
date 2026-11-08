@@ -1,7 +1,17 @@
 """Automated security rules and analyzers for UAA."""
 
+import hashlib
 from typing import Any, Dict, List, Optional
 from engine.security.findings import Finding, FindingStore
+
+
+def _deterministic_finding_id(category_prefix: str, *keys: Any) -> str:
+    """Generate a deterministic, reproducible finding ID using SHA-256."""
+    raw_key = ":".join(str(k or "") for k in keys)
+    digest = hashlib.sha256(raw_key.encode("utf-8")).hexdigest()
+    num = int(digest[:8], 16) % 10000
+    return f"FIND-{category_prefix}-{num:04d}"
+
 
 class SecurityAnalyzer:
     """Analyzes endpoint inventory and execution results to detect API vulnerabilities."""
@@ -36,7 +46,7 @@ class SecurityAnalyzer:
 
         if not is_auth_required and is_sensitive:
             ep_id = ep.get("endpoint_id")
-            fid = f"FIND-AUTH-{abs(hash(ep_id)) % 10000:04d}"
+            fid = _deterministic_finding_id("AUTH", ep_id)
             self.store.add_finding(Finding(
                 finding_id=fid,
                 title="Sensitive Endpoint Appears Unauthenticated",
@@ -65,7 +75,7 @@ class SecurityAnalyzer:
 
         if "{" in path and "}" in path and not tenant_isolated:
             ep_id = ep.get("endpoint_id")
-            fid = f"FIND-BOLA-{abs(hash(ep_id)) % 10000:04d}"
+            fid = _deterministic_finding_id("BOLA", ep_id)
             self.store.add_finding(Finding(
                 finding_id=fid,
                 title="Potential Broken Object Level Authorization (BOLA/IDOR)",
@@ -99,7 +109,7 @@ class SecurityAnalyzer:
                 found_risky = set(props.keys()).intersection(risky_fields)
                 if found_risky:
                     ep_id = ep.get("endpoint_id")
-                    fid = f"FIND-MASS-{abs(hash(ep_id)) % 10000:04d}"
+                    fid = _deterministic_finding_id("MASS", ep_id)
                     self.store.add_finding(Finding(
                         finding_id=fid,
                         title="Mass Assignment Risk via Privileged Body Properties",
@@ -133,7 +143,7 @@ class SecurityAnalyzer:
             if pat in body_str:
                 scen_id = res.get("scenario_id")
                 ep_id = res.get("endpoint_id")
-                fid = f"FIND-LEAK-{abs(hash(scen_id)) % 10000:04d}"
+                fid = _deterministic_finding_id("LEAK", scen_id, pat)
                 self.store.add_finding(Finding(
                     finding_id=fid,
                     title="Sensitive Credential/Key Leakage in API Response",
@@ -175,7 +185,7 @@ class SecurityAnalyzer:
         if status >= 500 and any(ti in body_str for ti in trace_indicators):
             scen_id = res.get("scenario_id")
             ep_id = res.get("endpoint_id")
-            fid = f"FIND-ERR-{abs(hash(scen_id)) % 10000:04d}"
+            fid = _deterministic_finding_id("ERR", scen_id)
             self.store.add_finding(Finding(
                 finding_id=fid,
                 title="Unhandled Exception Stack Trace Leaked to Client",
@@ -211,7 +221,7 @@ class SecurityAnalyzer:
         for h_name, expected_val, msg in recommended_headers:
             if h_name not in headers_lower:
                 ep_id = res.get("endpoint_id")
-                fid = f"FIND-HDR-{abs(hash(ep_id + h_name)) % 10000:04d}"
+                fid = _deterministic_finding_id("HDR", ep_id, h_name)
                 if fid not in self.store.findings:
                     self.store.add_finding(Finding(
                         finding_id=fid,
@@ -233,4 +243,5 @@ class SecurityAnalyzer:
                         cwe_id="CWE-16",
                         owasp_api_category="API8:2023 Security Misconfiguration",
                     ))
+
 

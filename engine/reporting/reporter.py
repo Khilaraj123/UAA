@@ -113,12 +113,26 @@ def generate_markdown_report(
             f"- **Pass Rate Delta**: `{trend.get('pass_rate_delta'):+0.2f}%` ({trend.get('pass_rate_previous')}% -> {trend.get('pass_rate_current')}%)",
             f"- **Regressions Detected**: `{trend.get('regression_count')}`",
             f"- **Fixes Verified**: `{trend.get('fix_count')}`",
-            "",
         ])
+        if trend.get("missing_scenario_count"):
+            lines.append(f"- **Missing Scenarios (Coverage Loss)**: `{trend.get('missing_scenario_count')}`")
+        if trend.get("new_scenario_count"):
+            lines.append(f"- **New Scenarios**: `{trend.get('new_scenario_count')}`")
+        lines.append("")
         if trend.get("regressions"):
             lines.append("### 🚨 Regressions")
             for reg in trend["regressions"]:
                 lines.append(f"- {reg.get('message')}")
+            lines.append("")
+        if trend.get("missing_scenarios"):
+            lines.append("### ⚠️ Missing Scenarios (Coverage Loss)")
+            for ms in trend["missing_scenarios"]:
+                lines.append(f"- {ms.get('message')}")
+            lines.append("")
+        if trend.get("new_scenarios"):
+            lines.append("### 🆕 New Scenarios")
+            for ns in trend["new_scenarios"]:
+                lines.append(f"- {ns.get('message')}")
             lines.append("")
     else:
         lines.append("Trend unavailable — baseline run.\n")
@@ -483,12 +497,47 @@ def generate_html_dashboard(
         container.innerHTML = '<div class="card"><p style="color:var(--text-muted);">Baseline run. Historical regression trend available after subsequent runs.</p></div>';
         return;
       }}
+      const missingHtml = tr.missing_scenarios && tr.missing_scenarios.length ? `
+        <div style="margin-top:16px;">
+          <h4 style="color:var(--fail); font-size:14px; margin-bottom:8px;">⚠️ Missing Scenarios (Coverage Loss) (${{tr.missing_scenario_count}})</h4>
+          ${{tr.missing_scenarios.map(m => `
+            <div style="background:#21262d; padding:8px; border-radius:4px; margin-top:6px;">
+              <code>${{m.scenario_id}}</code>: ${{m.message}}
+            </div>
+          `).join('')}}
+        </div>
+      ` : '';
+      const newHtml = tr.new_scenarios && tr.new_scenarios.length ? `
+        <div style="margin-top:16px;">
+          <h4 style="color:var(--info, #58a6ff); font-size:14px; margin-bottom:8px;">🆕 New Scenarios (${{tr.new_scenario_count}})</h4>
+          ${{tr.new_scenarios.map(n => `
+            <div style="background:#21262d; padding:8px; border-radius:4px; margin-top:6px;">
+              <code>${{n.scenario_id}}</code>: ${{n.message}}
+            </div>
+          `).join('')}}
+        </div>
+      ` : '';
+      const regressionsHtml = tr.regressions && tr.regressions.length ? `
+        <div style="margin-top:16px;">
+          <h4 style="color:var(--fail); font-size:14px; margin-bottom:8px;">🚨 Regressions (${{tr.regression_count}})</h4>
+          ${{tr.regressions.map(r => `
+            <div style="background:#21262d; padding:8px; border-radius:4px; margin-top:6px;">
+              <code>${{r.scenario_id}}</code>: ${{r.message}}
+            </div>
+          `).join('')}}
+        </div>
+      ` : '';
       container.innerHTML = `
         <div class="card">
           <h3 style="color:var(--text-bright); margin-bottom:12px;">Historical Run Comparison</h3>
           <p>Compared: <code>${{tr.previous_run_id}}</code> &rarr; <code>${{tr.current_run_id}}</code></p>
           <p>Pass Rate Delta: <strong>${{tr.pass_rate_delta >= 0 ? '+' : ''}}${{tr.pass_rate_delta}}%</strong> (${{tr.pass_rate_previous}}% &rarr; ${{tr.pass_rate_current}}%)</p>
           <p>Regressions: <strong style="color:var(--fail);">${{tr.regression_count}}</strong> | Fixes: <strong style="color:var(--pass);">${{tr.fix_count}}</strong></p>
+          ${{tr.missing_scenario_count ? `<p>Missing Scenarios (Coverage Loss): <strong style="color:var(--fail);">${{tr.missing_scenario_count}}</strong></p>` : ''}}
+          ${{tr.new_scenario_count ? `<p>New Scenarios: <strong>${{tr.new_scenario_count}}</strong></p>` : ''}}
+          ${{regressionsHtml}}
+          ${{missingHtml}}
+          ${{newHtml}}
         </div>
       `;
     }}

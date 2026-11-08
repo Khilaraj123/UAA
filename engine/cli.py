@@ -224,6 +224,17 @@ def cmd_report(args):
     print(f"  - {run_dir / 'report.md'}")
     print(f"  - {run_dir / 'reports.html'}")
 
+def cmd_history_compare(args):
+    mgr = RunHistoryManager(base_audit_dir=args.runs_dir or "api-audit")
+    diff = mgr.compare_runs(args.prev, args.curr)
+    if getattr(args, "out_file", None):
+        out_p = Path(args.out_file)
+        with open(out_p, "w", encoding="utf-8") as f:
+            json.dump(diff, f, indent=2)
+        print(f"📄 Saved trend comparison to {out_p}")
+    else:
+        print(json.dumps(diff, indent=2))
+
 def main():
     parser = argparse.ArgumentParser(description="Universal API Assurance (UAA) CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -262,6 +273,14 @@ def main():
     r_p = subparsers.add_parser("report", help="Generate report.md and reports.html")
     r_p.add_argument("--run-dir", "-d", required=True, help="Directory containing run artifacts")
     r_p.set_defaults(func=cmd_report)
+
+    # history-compare
+    h_p = subparsers.add_parser("history-compare", help="Compare two historical runs for regressions")
+    h_p.add_argument("--runs-dir", default="api-audit", help="Base directory containing runs/")
+    h_p.add_argument("--prev", required=True, help="Previous run ID (e.g. run-001)")
+    h_p.add_argument("--curr", required=True, help="Current run ID (e.g. run-002)")
+    h_p.add_argument("--out-file", help="Optional path to output comparison JSON")
+    h_p.set_defaults(func=cmd_history_compare)
 
     args = parser.parse_args()
     args.func(args)
